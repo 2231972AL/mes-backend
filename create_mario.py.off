@@ -1,0 +1,11 @@
+from database import SessionLocal
+from models import User
+from utils.security import hash_pin
+
+db = SessionLocal()
+
+u = User(nome="Mario", pin_hash=hash_pin("5678"), ruolo="operatore")
+db.add(u)
+db.commit()
+
+print("Mario creato con PIN 5678")

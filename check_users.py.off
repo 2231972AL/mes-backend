@@ -1,0 +1,10 @@
+from database import SessionLocal
+from models import User
+
+db = SessionLocal()
+
+users = db.query(User).all()
+
+print("=== UTENTI NEL DATABASE ===")
+for u in users:
+    print(f"ID: {u.id}, Nome: {u.nome}, Ruolo: {u.ruolo}")

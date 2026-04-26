@@ -1,0 +1,18 @@
+from database import SessionLocal
+from models import User
+from utils.security import hash_pin
+
+db = SessionLocal()
+
+nome = "Andrea"
+pin = "1234"
+ruolo = "admin"
+
+hashed = hash_pin(pin)
+
+user = User(nome=nome, pin_hash=hashed, ruolo=ruolo)
+
+db.add(user)
+db.commit()
+
+print("Utente creato con successo!")

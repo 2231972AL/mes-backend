@@ -1,0 +1,10 @@
+from database import SessionLocal
+from models import User
+
+db = SessionLocal()
+
+# Cancella tutti gli utenti tranne l'admin
+db.query(User).filter(User.nome == "Mario").delete()
+db.commit()
+
+print("Utenti Mario cancellati.")
