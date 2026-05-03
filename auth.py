@@ -1,45 +1,39 @@
+import uuid
 from fastapi import HTTPException, Depends
 from sqlalchemy.orm import Session
-from models import Utente, Sessione
-from utils.security import create_token
+from models import User
 from database import get_db
 
-def login(username: str, password: str, db: Session = Depends(get_db)):
-    # Cerca l'utente corretto
-    user = db.query(Utente).filter(
-        Utente.username == username,
-        Utente.password == password,
-        Utente.attivo == 1
-    ).first()
+# ---------------------------------------------------------
+# LOGIN CON PIN
+# ---------------------------------------------------------
+def login_pin(pin: str, db: Session):
+    user = db.query(User).filter(User.pin == pin).first()
 
     if not user:
-        raise HTTPException(status_code=401, detail="Credenziali errate")
+        raise HTTPException(status_code=401, detail="PIN non valido")
 
-    # Crea token
-    token = create_token()
+    # Genera token
+    token = str(uuid.uuid4())
 
-    sessione = Sessione(
-        user_id=user.id,
-        token=token
-    )
-
-    db.add(sessione)
+    # Salva il token nel DB
+    user.token = token
     db.commit()
-    db.refresh(sessione)
 
     return {
-        "access_token": token,
-        "user_id": user.id
+        "token": token,
+        "nome": user.nome,
+        "ruolo": user.ruolo
     }
 
 
+# ---------------------------------------------------------
+# VALIDAZIONE TOKEN PER ENDPOINT PROTETTI
+# ---------------------------------------------------------
 def get_user_from_token_db(token: str, db: Session = Depends(get_db)):
-    sessione = db.query(Sessione).filter(Sessione.token == token).first()
-    if not sessione:
-        raise HTTPException(status_code=401, detail="Token non valido")
+    user = db.query(User).filter(User.token == token).first()
 
-    user = db.query(Utente).filter(Utente.id == sessione.user_id).first()
     if not user:
-        raise HTTPException(status_code=401, detail="Utente non trovato")
+        raise HTTPException(status_code=401, detail="Token non valido")
 
     return user
