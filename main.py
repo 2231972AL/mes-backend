@@ -42,7 +42,7 @@ app = FastAPI(
 # -------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],      # in produzione puoi restringere
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -57,8 +57,6 @@ app.include_router(commesse.router)
 app.include_router(fasi.router)
 app.include_router(log.router)
 app.include_router(operatori.router)
-
-# Router extra già presenti nel tuo progetto
 app.include_router(timer.router)
 app.include_router(materiali.router)
 app.include_router(lotti.router)
@@ -66,3 +64,11 @@ app.include_router(gantt.router)
 app.include_router(notifiche.router)
 app.include_router(kpi.router)
 app.include_router(manutenzioni.router)
+
+# -------------------------------
+# Avvio server
+# -------------------------------
+import uvicorn
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=10000)
