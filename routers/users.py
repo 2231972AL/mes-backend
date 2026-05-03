@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import Utente
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(prefix="/utente", tags=["Utente"])
 
 @router.post("/")
 def create_user(username: str, password: str, db: Session = Depends(get_db)):
@@ -18,9 +18,9 @@ def create_user(username: str, password: str, db: Session = Depends(get_db)):
         attivo=1
     )
 
-    db.add(user)
+    db.add(utente)
     db.commit()
-    db.refresh(user)
+    db.refresh(utente)
     return user
 
 @router.get("/")
